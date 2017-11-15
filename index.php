@@ -1,48 +1,59 @@
-<?php
-ini_set('memory_limit', '-1');
-//mysql_connect("localhost","root","");
-//mysql_select_db("informark");
+<?php ini_set('memory_limit', '-1');
 
-    //$oXml = new SimpleXMLElement("2439.xml"); //carrega o arquivo XML e retornando um Array
-    //$sJson      = json_encode( $oXml );
-	//$aContent   = json_decode( $sJson, TRUE );
+    $fileRevista = '2439.xml';
+    $nomeRevista = str_replace(".xml","",$fileRevista);
 
-	
-	$sxe = new SimpleXMLElement('2439.xml', NULL, TRUE);
-	
-	$i=1;
-	$qtd_paginas_ok = 1;
-    foreach($sxe as $item){ 
-		
-		if($i>=1){
-			
-			foreach($item->par as $par){
-				
-				foreach($par->table as $vtable){
-					
-					foreach($par->table->column->row as $row){
-						echo $row;
-					}
-					
-				}
-				
-				
-				$qtd_paginas_ok++;
-				
-			}
-		
-		
-			
-			if($i==50) exit;
-			
-			
-				
-			
-				
-		}
-			
-		$i++;
+    enviarEmail($nomeRevista,'INICIO');
 
-	
-    } //fim do foreach
+    $paginasRevista = new SimpleXMLElement($fileRevista, NULL, TRUE);
+    $qtd_paginas = 1;
+    $qtdTotalProcessos = 0;
+    foreach($paginasRevista as $paginaRevista){
+        $qtd_linhas_na_paginas = 1;
+        foreach($paginaRevista->par as $linhasPagina){
+            $arrayProcessos = [];
+            foreach($linhasPagina->table as $table){
+                $qtdProcessosPorPagina = 0;
+                foreach($table->column->row as $coluna){
+                    $colunaConteudoLimpo = trim($coluna);
+                    $qtdCaracteres = strlen($colunaConteudoLimpo);
+                    if($qtdCaracteres==9){
+                        if( is_numeric($colunaConteudoLimpo)){
+                            $arrayProcessos[] = $colunaConteudoLimpo;
+                            $qtdProcessosPorPagina++;
+                        }
+
+                    }
+                }
+                if(!empty($qtdProcessosPorPagina)) {
+                    $values = [];
+                    foreach($arrayProcessos as $processo){
+                        $values[] = "('$processo','$nomeRevista','$qtd_paginas')";
+                    }
+                    gerarInsert($values);
+                    //echo "\n".$qtdProcessosPorPagina. " - processos encontrados na pagina (".$qtd_paginas.") \n \n \n";
+                }
+
+            }
+        }
+        if(isset($qtdProcessosPorPagina)) $qtdTotalProcessos += $qtdProcessosPorPagina;
+        $qtd_paginas++;
+    }
+    $msgTotais = "$qtdTotalProcessos processos encontrado na revista ".$nomeRevista;
+
+    enviarEmail($nomeRevista,'FIM',$msgTotais);
+
+    function gerarInsert($values){
+        $sql = "INSERT INTO revista_verificar_qtd (processo,revista,pagina) VALUES ";
+        $sqlInsert = $sql.join(',', $values);
+        echo $sqlInsert.";";
+        echo "\n\n";
+    }
+    function enviarEmail($nomeRevista,$momento,$msgTotais=null){
+        echo "Titulo do Email: $momento da verificação na revista $nomeRevista";
+        echo "\n";
+        if($msgTotais) echo "Corpo do Email: ".$msgTotais;
+        echo "\n\n";
+    }
+
 ?>
