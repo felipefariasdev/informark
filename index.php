@@ -5,38 +5,13 @@
 
     enviarEmail($nomeRevista,'INICIO');
 
-    $paginasRevista = new SimpleXMLElement($fileRevista, NULL, TRUE);
-    $qtd_paginas = 1;
+    $conteudoRevista = new SimpleXMLElement($fileRevista, NULL, TRUE);                              //lendo a revista toda
+    $pagina = 1;
     $qtdTotalProcessos = 0;
-    foreach($paginasRevista as $paginaRevista){
-        $qtd_linhas_na_paginas = 1;
-        foreach($paginaRevista->par as $linhasPagina){
-            $arrayProcessos = [];
-            foreach($linhasPagina->table as $table){
-                $qtdProcessosPorPagina = 0;
-                foreach($table->column->row as $coluna){
-                    $colunaConteudoLimpo = trim($coluna);
-                    $qtdCaracteres = strlen($colunaConteudoLimpo);
-                    if($qtdCaracteres==9){
-                        if( is_numeric($colunaConteudoLimpo)){
-                            $arrayProcessos[] = $colunaConteudoLimpo;
-                            $qtdProcessosPorPagina++;
-                        }
-
-                    }
-                }
-                if(!empty($qtdProcessosPorPagina)) {
-                    $values = [];
-                    foreach($arrayProcessos as $processo){
-                        $values[] = "('$processo','$nomeRevista','$qtd_paginas')";
-                    }
-                    gerarInsert($values);
-                }
-
-            }
-        }
+    foreach($conteudoRevista as $conteudoPaginaRevista){
+        $qtdProcessosPorPagina = lerConteudoPagina($conteudoPaginaRevista,$pagina,$nomeRevista);    //lendo o conteudo de cada pagina
         if(isset($qtdProcessosPorPagina)) $qtdTotalProcessos += $qtdProcessosPorPagina;
-        $qtd_paginas++;
+        $pagina++;
     }
     $msgTotais = "$qtdTotalProcessos processos encontrados na revista ".$nomeRevista;
 
@@ -52,7 +27,38 @@
         echo "Título do Email: $momento da verificação na revista $nomeRevista";
         echo "\n";
         if($msgTotais) echo "Corpo do Email: ".$msgTotais;
-        echo "\n\n";
+        echo "\n";
     }
 
+/**
+ * @param $paginaRevista
+ * @param $pagina
+ * @param $nomeRevista
+ */
+function lerConteudoPagina($conteudoPaginaRevista, $pagina, $nomeRevista){      //lendo o conteudo de cada pagina
+        $qtdProcessosPorPagina = 0;
+        foreach($conteudoPaginaRevista->par as $linhasPagina){                  //lendo as linhas da tabela
+            $arrayProcessos = [];
+            foreach($linhasPagina->table as $table){                            //lendo as linhas da tabela
+                foreach($table->column->row as $coluna){                        //lendo as colunas de cada linha
+                    $colunaConteudoLimpo = trim($coluna);                       // limpando os espaços
+                    $qtdCaracteres = strlen($colunaConteudoLimpo);              // quantidade de caracteres
+                    if($qtdCaracteres==9){                                      //verificando se tem 9 digitos
+                        if( is_numeric($colunaConteudoLimpo)){                  // verificando se é numero
+                            $arrayProcessos[] = $colunaConteudoLimpo;           // processos de cada pagina
+                            $qtdProcessosPorPagina++;                           // total de processos nesssa pagina
+                        }
+                    }
+                }
+                if(!empty($qtdProcessosPorPagina)) {
+                    $values = [];
+                    foreach($arrayProcessos as $processo){
+                        $values[] = "('$processo','$nomeRevista','$pagina')";
+                    }
+                    gerarInsert($values);
+                }
+            }
+        }
+        return $qtdProcessosPorPagina;
+    }
 ?>
