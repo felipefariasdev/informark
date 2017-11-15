@@ -31,7 +31,6 @@
                         $values[] = "('$processo','$nomeRevista','$qtd_paginas')";
                     }
                     gerarInsert($values);
-                    //echo "\n".$qtdProcessosPorPagina. " - processos encontrados na pagina (".$qtd_paginas.") \n \n \n";
                 }
 
             }
