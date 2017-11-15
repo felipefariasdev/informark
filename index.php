@@ -38,7 +38,7 @@
         if(isset($qtdProcessosPorPagina)) $qtdTotalProcessos += $qtdProcessosPorPagina;
         $qtd_paginas++;
     }
-    $msgTotais = "$qtdTotalProcessos processos encontrado na revista ".$nomeRevista;
+    $msgTotais = "$qtdTotalProcessos processos encontrados na revista ".$nomeRevista;
 
     enviarEmail($nomeRevista,'FIM',$msgTotais);
 
@@ -49,7 +49,7 @@
         echo "\n\n";
     }
     function enviarEmail($nomeRevista,$momento,$msgTotais=null){
-        echo "Titulo do Email: $momento da verificação na revista $nomeRevista";
+        echo "Título do Email: $momento da verificação na revista $nomeRevista";
         echo "\n";
         if($msgTotais) echo "Corpo do Email: ".$msgTotais;
         echo "\n\n";
