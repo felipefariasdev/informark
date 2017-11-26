@@ -1,0 +1,1 @@
+SELECT * FROM rev_temp where conteudo_linha like '%907969119%';
