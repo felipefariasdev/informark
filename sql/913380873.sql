@@ -1,1 +1,0 @@
-SELECT * FROM rev_temp where conteudo_linha like '%913380873%';
