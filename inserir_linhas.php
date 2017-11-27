@@ -4,7 +4,7 @@ create_table($mysqli);
 echo "\n";
 echo 'Data e hora inicio - '.date('d/m/Y H:i:s');
 echo "\n\n";
-$arquivo = fopen ('2439.xml', 'r');
+$arquivo = fopen ('arquivos/Marcas2423.pdf.txt', 'r');
 $i=1;
 while(!feof($arquivo)){
     $conteudo_linha = fgets($arquivo, 1024);

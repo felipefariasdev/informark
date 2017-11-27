@@ -10,14 +10,24 @@ function connection(){
 	return $mysqli;
 }
 function create_table($mysqli){
-	$mysqli->query("DROP TABLE `rev_temp`");
-    $mysqli->query("CREATE TABLE `rev_temp` (
+    $sql = "DROP TABLE `rev_temp`";
+	$mysqli->query($sql);
+    if ($mysqli->error) {
+        try {
+            throw new Exception("MySQL error $mysqli->error <br> Query:<br> $sql", $mysqli->errno);
+        } catch(Exception $e ) {
+            echo "Error No: ".$e->getCode(). " - ". $e->getMessage() . "<br >";
+            echo nl2br($e->getTraceAsString());
+        }
+    }
+	$sql = "CREATE TABLE `rev_temp` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `conteudo_linha` VARCHAR(255) NULL,
-  PRIMARY KEY (`id`))");
+  PRIMARY KEY (`id`))";
+	$mysqli->query($sql);
     if ($mysqli->error) {
 		try {    
-			throw new Exception("MySQL error $mysqli->error <br> Query:<br> $sql", $msqli->errno);    
+			throw new Exception("MySQL error $mysqli->error <br> Query:<br> $sql", $mysqli->errno);
 		} catch(Exception $e ) {
 			echo "Error No: ".$e->getCode(). " - ". $e->getMessage() . "<br >";
 			echo nl2br($e->getTraceAsString());
@@ -25,11 +35,11 @@ function create_table($mysqli){
 	}
 }
 function insert($conteudo_linha,$mysqli){
-	$sql = "INSERT INTO rev_temp (conteudo_linha) VALUES ('".$conteudo_linha."')";
+    $sql = "INSERT INTO rev_temp (conteudo_linha) VALUES ('".$conteudo_linha."')";
     $mysqli->query($sql);
     if ($mysqli->error) {
 		try {    
-			throw new Exception("MySQL error $mysqli->error <br> Query:<br> $sql", $msqli->errno);    
+			throw new Exception("MySQL error $mysqli->error <br> Query:<br> $sql", $mysqli->errno);
 		} catch(Exception $e ) {
 			echo "Error No: ".$e->getCode(). " - ". $e->getMessage() . "<br >";
 			echo nl2br($e->getTraceAsString());
