@@ -1,4 +1,4 @@
-# Revista -> Objetivo -> Inserir na tabela todas as linhas do arquivo txt
+# Revista -> Objetivo -> Inserir na tabela todos processos encontrado no arquivo pdf
 
 1 - Entrar no site http://revistas.inpi.gov.br/rpi
 
@@ -20,7 +20,15 @@ A tabela rev_temp será removida.
 
 A tabela rev_temp será criada.
 
-Todas linhas do arquivo Marcas2423.pdf.txt serão inseridas na tabela rev_temp.
+Todas os processos encontrados no arquivo Marcas2423.pdf.txt serão inseridas na tabela rev_temp.
 	
-	
-	
+/* VERIFICAR A QUANTIDADE DE PROCESSOS REPETIDOS NA REVISTA  */
+
+SELECT 
+	processo, COUNT(DISTINCT processo) AS qtdProcessos
+FROM
+	rev_temp
+GROUP BY processo
+HAVING COUNT(processo) > 0
+ORDER BY qtdProcessos DESC
+;	
