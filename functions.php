@@ -17,7 +17,7 @@ function connection(){
  * @param $mysqli
  */
 function create_table($mysqli){
-    $sql = "DROP TABLE `rev_temp`";
+    $sql = "DROP TABLE `ultima_revista_pdf_temp`";
 	$mysqli->query($sql);
     if ($mysqli->error) {
         try {
@@ -27,10 +27,12 @@ function create_table($mysqli){
             echo nl2br($e->getTraceAsString());
         }
     }
-	$sql = "CREATE TABLE `rev_temp` (
+	$sql = "CREATE TABLE `ultima_revista_pdf_temp` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `processo` VARCHAR(255) NULL,
-  PRIMARY KEY (`id`))";
+  `processo` INT(9) NOT NULL,
+  `rpi` INT(4) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = MyISAM;";
 	$mysqli->query($sql);
     if ($mysqli->error) {
 		try {    
@@ -41,18 +43,25 @@ function create_table($mysqli){
 		}
 	}
 }
+function multiexplode ($delimiters,$string) {
+    $ready = str_replace($delimiters, $delimiters[0], $string);
+    $launch = explode($delimiters[0], $ready);
+    return  $launch;
+}
+
 /**
  * @param $conteudoLine
  * @return array
  */
 function arrayLineSpace($conteudoLine){ // separa o conteudo de cada linha por espaço
-    $array_caracteres_spaces = explode(" ",$conteudoLine);
+    $array_caracteres_spaces = multiexplode(array(" ","-"),$conteudoLine);
     $array_caracteres_space_line = [];
     foreach($array_caracteres_spaces as $array_caracteres_space){
         $array_caracteres_space_line[] = $array_caracteres_space;
     }
     return $array_caracteres_space_line;
 }
+
 function getProcessos($arrayLineSpaces){ // armazena no array o conjunto de caracteres que foi identificado como um processo
     /** @var TYPE_NAME $arrayProcessos */
     $arrayProcessos = [];
@@ -81,9 +90,9 @@ function validatorProcesso($campo){ // verifica se aquele conjunto de caracteres
  * @param $arrayProcessos
  * @param $mysqli
  */
-function insert($arrayProcessos, $mysqli){ // insert os processos
-    foreach($arrayProcessos as $arrayProcesso){
-        $sql = "INSERT INTO rev_temp (processo) VALUES ('".$arrayProcesso."')";
+function insert($arrayProcessos,$rpi,$mysqli){ // insert os processos
+    foreach($arrayProcessos as $processo){
+        $sql = "INSERT INTO ultima_revista_pdf_temp (processo,rpi) VALUES (".$processo.",".$rpi.")";
         $mysqli->query($sql);
         if ($mysqli->error) {
             try {
@@ -93,8 +102,8 @@ function insert($arrayProcessos, $mysqli){ // insert os processos
                 echo nl2br($e->getTraceAsString());
             }
         }
-        echo $sql;
-        echo "\n";
+        //echo $sql;
+        //echo "\n";
     }
 }
 ?>
