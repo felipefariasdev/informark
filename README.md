@@ -2,7 +2,7 @@
 
 1 - Entrar no site http://revistas.inpi.gov.br/rpi
 
-2 - Realizar o download da revista Ex 2423 em pdf que fica na coluna marcas.
+2 - Realizar o download da revista Ex 2423 em pdf que fica na coluna marcas. Link para download: http://revistas.inpi.gov.br/pdf/Marcas2423.pdf
 
 3 - Entrar no site: https://conversiontools.io/convert_pdf_to_txt/
 
